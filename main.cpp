@@ -25,12 +25,22 @@ void generate_template(const std::string template_file) {
 
     int spaces = 0;
     std::string line;
+    std::string parent;
+
     while (std::getline(file, line)) {
         if (line.length() < spaces + 1) throw std::runtime_error("Invalid template template");
 
         bool is_directory = line[spaces] == '/';
         if (is_directory) {
+            auto directory_name = line.substr(spaces + 1);
+            auto path = parent + directory_name;
+            std::filesystem::create_directories(path);
+            spaces += 2;
+            parent += directory_name + "/";
         } else {
+            auto file_name = line.substr(spaces);
+            auto path = parent + file_name;
+            std::ofstream(path).close();
         }
     }
     file.close();
